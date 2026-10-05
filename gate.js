@@ -9,7 +9,7 @@
   var GRACE_MS = 30 * 24 * 3600 * 1000;  /* offline use is allowed for 30 days after the last successful check */
 
   var root = document.documentElement;
-  var sb = null, wall = null, form = null, msgEl = null, emailEl = null, passEl = null, btnEl = null;
+  var sb = null, wall = null, form = null, msgEl = null, subEl = null, emailEl = null, passEl = null, btnEl = null;
 
   /* hide the whole page from the very first paint */
   var css = document.createElement("style");
@@ -60,7 +60,7 @@
     form = document.createElement("form");
     form.autocomplete = "on";
     var t = document.createElement("div"); t.className = "t"; t.textContent = (document.title || "Sign in").slice(0, 80);
-    var s = document.createElement("div"); s.className = "s"; s.textContent = "Sign in to continue";
+    var s = document.createElement("div"); s.className = "s"; s.textContent = "Sign in to continue"; subEl = s;
     emailEl = document.createElement("input"); emailEl.type = "email"; emailEl.placeholder = "Email";
     emailEl.autocomplete = "username"; emailEl.required = true;
     passEl = document.createElement("input"); passEl.type = "password"; passEl.placeholder = "Password";
@@ -81,6 +81,7 @@
     wall.style.display = "grid";
     form.querySelectorAll("input,button").forEach(function (el) { el.style.display = withForm ? "" : "none"; });
     msgEl.textContent = msg || "";
+    subEl.textContent = withForm ? "Sign in to continue" : "";
     if (withForm) { try { emailEl.focus(); } catch (e) {} }
   }
 
@@ -158,7 +159,7 @@
   }
 
   async function start() {
-    buildWall();
+    showWall("Checking access...", false);
     if (!(window.supabase && window.supabase.createClient)) {
       /* fail closed: no sign-in library, no app */
       if (navigator.onLine === false && graceOk()) return openApp();
